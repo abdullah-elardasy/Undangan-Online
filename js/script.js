@@ -77,7 +77,6 @@
     function decodeGuestName(name) {
         if (!name) return CONFIG.defaultGuestName;
         
-        // Decode URI component and replace + with space
         try {
             return decodeURIComponent(name.replace(/\+/g, ' '));
         } catch (e) {
@@ -90,15 +89,12 @@
      */
     function getGuestNameFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Check multiple possible parameters: ?to=, ?n=, ?p=
         const name = urlParams.get('to') || urlParams.get('n') || urlParams.get('p');
         
         if (name) {
             return decodeGuestName(name);
         }
         
-        // Check stored name
         const storedName = storage.get(CONFIG.localStorageKeys.guestName);
         if (storedName) {
             return storedName;
@@ -113,8 +109,6 @@
     function formatDateIndonesian(dateString) {
         try {
             const date = new Date(dateString);
-            
-            // Format: "12 November 2026, 14:30 WIB"
             const options = {
                 day: 'numeric',
                 month: 'long',
@@ -171,57 +165,45 @@
         
         if (!cover || !openBtn || !guestNameInput) return;
         
-        // Lock body scroll initially
         body.classList.add('noscroll');
         body.classList.add('no-scroll');
         
-        // Set guest name from URL or storage
         const guestName = getGuestNameFromURL();
         guestNameInput.value = guestName;
         
-        // Save guest name on input change
         guestNameInput.addEventListener('input', () => {
             storage.set(CONFIG.localStorageKeys.guestName, guestNameInput.value);
         });
         
-        // Open invitation handler
         openBtn.addEventListener('click', () => {
             if (isInvitationOpened) return;
             isInvitationOpened = true;
             
-            // Copy guest name to RSVP form
             const rsvpNameInput = document.getElementById('rsvpName');
             if (rsvpNameInput) {
                 rsvpNameInput.value = guestNameInput.value;
             }
             
-            // Add slide-up classes
             cover.classList.add('slide-up');
             cover.classList.add('hero-out');
             
-            // Unlock body scroll immediately
             body.classList.remove('noscroll');
             body.classList.remove('no-scroll');
             
-            // Start background music
             startBackgroundMusic();
             
-            // Hide cover completely after animation
             setTimeout(() => {
                 cover.style.display = 'none';
             }, 800);
             
-            // Initialize scroll reveal animations AFTER cover opens
             setTimeout(() => {
                 initScrollReveal();
             }, 900);
             
-            // Initialize parallax
             setTimeout(() => {
                 initParallax();
             }, 1000);
             
-            // Show music toggle button
             const musicToggle = document.getElementById('musicToggle');
             if (musicToggle) {
                 musicToggle.style.display = 'flex';
@@ -229,11 +211,10 @@
         });
     }
 
-    // ============ SCROLL REVEAL ANIMATIONS (VIEWPORT-BASED) ============
-    
+    // ============ SCROLL REVEAL ANIMATIONS (REPEATING SCROLL) ============
+
     function initScrollReveal() {
         if (prefersReducedMotion()) {
-            // Show all elements immediately
             document.querySelectorAll('.reveal, [data-aos]').forEach(el => {
                 el.classList.add('is-visible');
                 el.classList.add('aos-animate');
@@ -241,26 +222,22 @@
             return;
         }
         
-        // Get all reveal elements (both .reveal class and data-aos attributes)
         const revealElements = document.querySelectorAll('.reveal, [data-aos]');
-        
         if (!revealElements.length) return;
         
-        // Create IntersectionObserver with proper options
         scrollRevealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const delay = entry.target.getAttribute('data-delay') || 
+                              entry.target.getAttribute('data-aos-delay') || 0;
+
                 if (entry.isIntersecting) {
-                    const delay = entry.target.getAttribute('data-delay') || 
-                                 entry.target.getAttribute('data-aos-delay') || 0;
-                    
                     setTimeout(() => {
-                        // Add both classes for compatibility
                         entry.target.classList.add('is-visible');
                         entry.target.classList.add('aos-animate');
                     }, parseInt(delay));
-                    
-                    // Unobserve after revealing (reveal once)
-                    scrollRevealObserver.unobserve(entry.target);
+                } else {
+                    entry.target.classList.remove('is-visible');
+                    entry.target.classList.remove('aos-animate');
                 }
             });
         }, {
@@ -268,7 +245,6 @@
             rootMargin: '0px 0px -40px 0px'
         });
         
-        // Observe all reveal elements
         revealElements.forEach(el => {
             scrollRevealObserver.observe(el);
         });
@@ -282,7 +258,6 @@
         if (prefersReducedMotion()) return;
         
         const parallaxElements = document.querySelectorAll('.parallax-flower');
-        
         if (!parallaxElements.length) return;
         
         const updateParallax = () => {
@@ -297,19 +272,15 @@
                 const speed = parseFloat(el.getAttribute('data-speed')) || 0.1;
                 const offset = distance * speed;
                 
-                // Use translate property (not transform) to avoid conflicts
                 el.style.translate = `0 ${offset}px`;
             });
         };
         
-        // Throttled scroll handler with requestAnimationFrame
         const throttledParallax = throttle(() => {
             requestAnimationFrame(updateParallax);
-        }, 16); // ~60fps
+        }, 16);
         
         window.addEventListener('scroll', throttledParallax, { passive: true });
-        
-        // Initial update
         updateParallax();
     }
 
@@ -352,7 +323,6 @@
             })
             .catch(err => {
                 console.warn('Auto-play failed (browser policy):', err);
-                // Auto-play blocked by browser, user can manually start
             });
     }
 
@@ -372,7 +342,6 @@
             const now = new Date().getTime();
             const distance = weddingDate - now;
             
-            // Stop at zero
             if (distance < 0) {
                 daysEl.textContent = '00';
                 hoursEl.textContent = '00';
@@ -392,7 +361,6 @@
             secondsEl.textContent = String(seconds).padStart(2, '0');
         }
         
-        // Update immediately and every second
         updateCountdown();
         setInterval(updateCountdown, 1000);
     }
@@ -405,10 +373,8 @@
         copyButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 const textToCopy = btn.getAttribute('data-copy');
-                
                 if (!textToCopy) return;
                 
-                // Try modern clipboard API first
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(textToCopy)
                         .then(() => {
@@ -425,9 +391,6 @@
         });
     }
     
-    /**
-     * Fallback copy method using execCommand
-     */
     function fallbackCopy(text) {
         const textArea = document.createElement('textarea');
         textArea.value = text;
@@ -460,7 +423,6 @@
         const btnSubmit = document.getElementById('btnSubmit');
         const formMessage = document.getElementById('formMessage');
         
-        // Jumlah Tamu stepper
         const decreaseBtn = document.getElementById('decreaseBtn');
         const increaseBtn = document.getElementById('increaseBtn');
         const jumlahValue = document.getElementById('jumlahValue');
@@ -489,13 +451,11 @@
                 decreaseBtn.disabled = false;
             });
             
-            // Initialize button states
             decreaseBtn.disabled = currentValue <= 1;
         }
         
         if (!form || !btnSubmit || !formMessage) return;
         
-        // Check if already submitted
         const hasSubmitted = storage.get(CONFIG.localStorageKeys.rsvpSubmitted);
         if (hasSubmitted === 'true') {
             formMessage.textContent = 'Anda sudah mengirim RSVP. Terima kasih!';
@@ -505,16 +465,12 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Disable submit button
             btnSubmit.disabled = true;
             btnSubmit.textContent = 'Mengirim...';
             formMessage.textContent = '';
             formMessage.className = 'form-message';
             
-            // Get form data
             const formData = new FormData(form);
-            
-            // Validate
             const nama = formData.get('Nama').trim();
             const jumlah = formData.get('Jumlah');
             const status = formData.get('Status');
@@ -528,7 +484,6 @@
                 return;
             }
             
-            // Send to Google Sheets (form-encoded, not JSON)
             const urlEncodedData = new URLSearchParams({
                 Nama: nama,
                 Jumlah: jumlah,
@@ -537,7 +492,6 @@
             });
             
             try {
-                // Use no-cors mode (response not readable, but that's okay)
                 await fetch(CONFIG.rsvpEndpoint, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -547,14 +501,11 @@
                     body: urlEncodedData.toString()
                 });
                 
-                // Assume success (no-cors means we can't read response)
                 formMessage.textContent = 'Terima kasih! RSVP Anda berhasil dikirim.';
                 formMessage.className = 'form-message success';
                 
-                // Mark as submitted
                 storage.set(CONFIG.localStorageKeys.rsvpSubmitted, 'true');
                 
-                // Reset form
                 form.reset();
                 currentValue = 1;
                 if (jumlahValue) jumlahValue.textContent = '1';
@@ -562,7 +513,6 @@
                 if (decreaseBtn) decreaseBtn.disabled = true;
                 if (increaseBtn) increaseBtn.disabled = false;
                 
-                // Reload wishes after a short delay
                 setTimeout(() => {
                     loadWishes();
                 }, 1200);
@@ -581,25 +531,18 @@
     // ============ WISHES LIST ============
     
     function initWishes() {
-        // Load wishes on page load
         loadWishes();
     }
     
     async function loadWishes() {
         const wishesList = document.getElementById('wishesList');
-        const commentCount = document.getElementById('commentCount');
-        const statHadir = document.getElementById('statHadir');
-        const statTidakHadir = document.getElementById('statTidakHadir');
-        
         if (!wishesList) return;
         
-        // Show loading state
         wishesList.innerHTML = '<div class="wishes-loading">Memuat ucapan...</div>';
         
         try {
-            // Fetch with timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             const response = await fetch(CONFIG.rsvpEndpoint, {
                 method: 'GET',
@@ -614,29 +557,22 @@
             
             const data = await response.json();
             
-            // Validate response
             if (data.result !== 'success' || !Array.isArray(data.data)) {
                 throw new Error('Invalid response format');
             }
             
-            // Cache the wishes
             storage.set(CONFIG.localStorageKeys.cachedWishes, JSON.stringify(data.data));
-            
-            // Display wishes
             displayWishes(data.data);
             
         } catch (error) {
             console.error('Failed to load wishes:', error);
             
-            // Try to load from cache
             const cachedData = storage.get(CONFIG.localStorageKeys.cachedWishes);
-            
             if (cachedData) {
                 try {
                     const wishes = JSON.parse(cachedData);
                     displayWishes(wishes);
                     
-                    // Show a subtle notice that this is cached
                     const notice = document.createElement('div');
                     notice.className = 'wishes-cache-notice';
                     notice.textContent = '(Data dari cache terakhir)';
@@ -660,22 +596,17 @@
         
         if (!wishesList) return;
         
-        // Clear loading state
         wishesList.innerHTML = '';
         
-        // Sort newest first
         const sortedWishes = [...wishes].reverse();
         
-        // Calculate stats
         const hadirCount = wishes.filter(w => w.Status === 'Hadir').length;
         const tidakHadirCount = wishes.filter(w => w.Status === 'Tidak Hadir').length;
         
-        // Update stats
         if (commentCount) commentCount.textContent = `${wishes.length} Comments`;
         if (statHadir) statHadir.textContent = hadirCount;
         if (statTidakHadir) statTidakHadir.textContent = tidakHadirCount;
         
-        // Display wishes or empty state
         if (sortedWishes.length === 0) {
             wishesList.innerHTML = '<div class="wishes-empty">Belum ada ucapan. Jadilah yang pertama!</div>';
             return;
@@ -691,17 +622,13 @@
         const div = document.createElement('div');
         div.className = 'wish-item';
         
-        // Sanitize text content (use textContent, never innerHTML)
         const nama = wish.Nama || 'Anonim';
         const jumlah = wish.Jumlah || '1';
         const status = wish.Status || 'Hadir';
         const pesan = wish.Pesan || '';
         const timestamp = wish.Timestamp || '';
         
-        // Format timestamp
         const formattedDate = timestamp ? formatDateIndonesian(timestamp) : '';
-        
-        // Badge class
         const badgeClass = status === 'Hadir' ? 'hadir' : 'tidak-hadir';
         
         div.innerHTML = `
@@ -717,7 +644,6 @@
             <p class="wish-message"></p>
         `;
         
-        // Set text content safely
         div.querySelector('.wish-name').textContent = nama;
         div.querySelector('.wish-badge').textContent = status;
         div.querySelector('.wish-guests').textContent = `${jumlah} orang`;
@@ -743,7 +669,6 @@
     // ============ INITIALIZATION ============
     
     function init() {
-        // Initialize all features
         initCover();
         initBackgroundMusic();
         initCountdown();
@@ -751,20 +676,15 @@
         initRSVPForm();
         initWishes();
         
-        // Note: initScrollReveal and initParallax are called AFTER cover opens
-        // to prevent animations from completing behind the cover
-        
         console.log('✨ Wedding invitation initialized');
     }
 
-    // Run initialization when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 
-    // Expose retry function globally for the retry button
     window.weddingApp = {
         retryLoadWishes: loadWishes
     };
