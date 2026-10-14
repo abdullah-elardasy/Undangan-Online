@@ -13,39 +13,52 @@
 
 html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
 }
 
 body {
     font-family: 'Work Sans', sans-serif;
     color: #4f1c23;
-    background-color: #fff8eb;
+    background-color: var(--color-maroon);
     overflow-x: hidden;
     line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    background-image: url('https://res.cloudinary.com/lkvmumpl/image/upload/f_auto,q_auto,w_1200/v1790612543/Elegant_Patern.png');
+    background-size: 600px auto;
+    background-position: center;
 }
 
 /* Prevent scroll when cover is active */
-body.no-scroll {
-    overflow: hidden !important;
-    height: 100vh !important;
-}
-
+body.no-scroll,
 body.noscroll {
     overflow: hidden !important;
     height: 100vh !important;
+    position: fixed;
+    width: 100%;
+}
+
+/* Kunci utama pembatas ukuran agar proporsional di HP maupun Laptop */
+.main-content {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+    background-color: #fff8eb;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+    overflow-x: hidden;
 }
 
 /* ============ DESIGN SYSTEM TOKENS ============ */
 :root {
-    /* Column width and design scale unit */
-    --col: min(100vw, 480px);
-    --u: calc(var(--col) / 390);  /* 1u = 1px at 390px width */
+    --col: 100vw;
+    --u: calc(var(--col) / 390);
     
-    /* Colors */
     --color-maroon: #4f1c23;
     --color-cream: #fff8eb;
     --color-gold: #ffd285;
     
-    /* Spacing Scale (in u units) */
     --space-8: calc(8 * var(--u));
     --space-16: calc(16 * var(--u));
     --space-24: calc(24 * var(--u));
@@ -53,51 +66,55 @@ body.noscroll {
     --space-48: calc(48 * var(--u));
     --space-64: calc(64 * var(--u));
     
-    /* Standard side margin */
-    --margin-x: calc(24 * var(--u));
+    --margin-x: calc(20 * var(--u));
     
-    /* Typography */
     --font-script: 'Imperial Script', cursive;
     --font-serif: 'Playfair Display', serif;
     --font-sans: 'Work Sans', sans-serif;
     --font-arabic: 'Aref Ruqaa', serif;
     
-    /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
 }
 
-/* ============ LAYOUT STRUCTURE ============ */
+/* ============ LAYOUT STRUCTURE (SPLIT DESKTOP) ============ */
 
-/* Phone and small tablet: centered column */
+/* 1. Tampilan Default (Mobile / HP) */
 body {
     display: flex;
     justify-content: center;
-    background-image: url('https://res.cloudinary.com/lkvmumpl/image/upload/f_auto,q_auto,w_1200/v1790612543/Elegant_Patern.png');
-    background-size: 600px auto;
-    background-position: center;
+    background-color: var(--color-maroon);
+    min-height: 100vh;
 }
 
 .main-content {
-    width: var(--col);
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
     position: relative;
-    background-color: transparent;
+    background-color: #fff8eb;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+    overflow-x: hidden;
 }
 
-/* Desktop: split layout with fixed hero panel */
+/* 2. Tampilan Mode Desktop (Layar >= 900px) */
 @media (min-width: 900px) {
     body {
         justify-content: flex-end;
-        background: var(--color-cream);
+        background-color: var(--color-maroon);
     }
-    
+
     .main-content {
         width: 480px;
+        margin-right: 0;
         margin-left: auto;
+        position: relative;
+        z-index: 10;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
     }
-    
-    /* Fixed hero panel on the left */
+
+    /* Background Sisi Kiri Desktop */
     body::before {
         content: '';
         position: fixed;
@@ -106,25 +123,43 @@ body {
         width: calc(100vw - 480px);
         height: 100vh;
         background-color: var(--color-maroon);
-        background-image: url('https://res.cloudinary.com/lkvmumpl/image/upload/f_auto,q_auto,w_1200/v1790612543/Elegant_Patern.png');
-        background-size: 600px auto;
+        background-image: url('https://res.cloudinary.com/lkvmumpl/image/upload/v1791970941/bg1.jpg');
+        background-size: 300px auto;
         background-position: center;
-        z-index: 0;
+        z-index: 1;
     }
-    
-    /* Hero content */
+
+    /* Panel Teks Sisi Kiri Desktop (Gaya Photoshop) */
     body::after {
-        content: '';
+        content: 'The Wedding of \A Nasik \A & \A Nabila';
+        white-space: pre-wrap;
         position: fixed;
         left: 0;
         top: 0;
         width: calc(100vw - 480px);
         height: 100vh;
-        background-image: url('https://res.cloudinary.com/lkvmumpl/image/upload/f_auto,q_auto,w_1200/v1790612199/texture.png');
-        background-size: cover;
-        opacity: 0.09;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family: var(--font-serif);
+        font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+        font-weight: 700;
+        color: var(--color-gold);
+        z-index: 2;
+        padding: 40px;
+        box-sizing: border-box;
+        line-height: 1.3;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         pointer-events: none;
-        z-index: 1;
+    }
+
+    /* Penyesuaian Cover overlay agar hanya menutup kolom kanan */
+    .cover {
+        width: 480px !important;
+        right: 0;
+        left: auto !important;
     }
 }
 
@@ -134,7 +169,6 @@ body {
     padding: var(--space-48) var(--margin-x);
 }
 
-/* Ensure content is above pattern overlays */
 .section > * {
     position: relative;
     z-index: 1;
@@ -181,7 +215,6 @@ body {
     z-index: 0;
 }
 
-/* Profile section split: maroon top, watercolor beige bottom */
 .profiles-section .opening-content {
     position: relative;
     z-index: 1;
@@ -208,9 +241,7 @@ body {
     text-align: center;
 }
 
-
 /* ============ COVER SECTION ============ */
-
 .cover {
     position: fixed;
     inset: 0;
@@ -223,8 +254,6 @@ body {
     justify-content: center;
     overflow-y: auto;
     overflow-x: hidden;
-    
-    /* Premium slide-up transition */
     transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
 }
 
@@ -235,7 +264,6 @@ body {
     pointer-events: none;
 }
 
-/* Desktop: cover only the right column */
 @media (min-width: 700px) {
     .cover {
         margin-left: auto;
@@ -243,7 +271,6 @@ body {
     }
 }
 
-/* Cover pattern overlay */
 .cover::before {
     content: '';
     position: absolute;
@@ -268,27 +295,24 @@ body {
     z-index: 1;
 }
 
-/* Stadium/Capsule Shape with responsive height */
 .cover-arch {
-    --cap-h: min(calc(626 * var(--u)), calc(100dvh - 60px));
-    --cap-w: calc(var(--cap-h) * 343 / 626);
     position: relative;
-    width: var(--cap-w);
-    height: var(--cap-h);
-    max-height: calc(90dvh - 40px); /* Memastikan tinggi tidak melebihi layar HP */
+    width: min(90vw, 360px);
+    height: min(85dvh, 580px);
     background-color: var(--color-maroon);
     border: 2px solid var(--color-gold);
-    border-radius: calc(var(--cap-w) / 2);
+    border-radius: 240px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: calc(28 * var(--u)) calc(20 * var(--u)); /* Padding disesuaikan */
-    gap: calc(10 * var(--u));                          /* Gap dirapatkan sedikit */
+    padding: calc(20 * var(--u)) calc(16 * var(--u));
+    gap: calc(6 * var(--u));
     color: var(--color-cream);
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-/* Logo inside capsule at top */
 .cover-logo {
     width: calc(90 * var(--u));
     margin-top: calc(-10 * var(--u));
@@ -296,7 +320,6 @@ body {
     margin-bottom: calc(3 * var(--u));
 }
 
-/* Rose decorations on cover - larger size */
 .rose {
     position: absolute;
     width: calc(300 * var(--u));
@@ -334,7 +357,7 @@ body {
     flex-direction: column;
     gap: calc(4 * var(--u));
     color: var(--color-gold);
-    margin-bottom:calc(20 * var(--u)); ;
+    margin-bottom: calc(20 * var(--u));
 }
 
 .ampersand {
@@ -352,8 +375,8 @@ body {
 
 .cover-guest label {
     display: block;
-    font-family: var(--font-script); /* Menggunakan font latin script */
-    font-size: calc(36 * var(--u));   /* Ukuran Dear: disesuaikan */
+    font-family: var(--font-script);
+    font-size: calc(36 * var(--u));
     line-height: 0.2;
     margin-bottom: calc(5 * var(--u));
     color: var(--color-gold);
@@ -379,40 +402,7 @@ body {
     color: rgba(255, 224, 170, 0.5);
 }
 
-.edit-icon {
-    position: absolute;
-    right: calc(-24 * var(--u));
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.7;
-    width: calc(16 * var(--u));
-    height: calc(16 * var(--u));
-}
-
-.btn-open {
-    background-color: var(--color-gold);
-    color: var(--color-maroon);
-    border: none;
-    border-radius: 9999px;
-    padding: calc(8 * var(--u)) calc(18 * var(--u));
-    font-family: var(--font-serif);                  /* Font serif elegant */
-    font-weight: 600;
-    font-size: calc(12 * var(--u));
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: calc(3 * var(--u));
-    margin-top: calc(-3 * var(--u));
-    transition: transform var(--transition-fast);
-}
-
-.btn-open svg {
-    width: calc(14 * var(--u));
-    height: auto;
-}
-
-/* ============ STYLING TOMBOL OPEN INVITATION ============ */
-
+/* Tombol Open Invitation */
 .btn-open {
     position: relative;
     background-color: var(--color-gold);
@@ -429,16 +419,13 @@ body {
     gap: calc(8 * var(--u));
     margin-top: calc(8 * var(--u));
     overflow: hidden;
-    
-    /* Transisi halus */
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
                 box-shadow 0.2s ease, 
                 background-color 0.2s ease;
     box-shadow: 0 4px 15px rgba(212, 175, 55, 0.25);
-    -webkit-tap-highlight-color: transparent; /* Menghilangkan kotak biru bawaan HP saat diklik */
+    -webkit-tap-highlight-color: transparent;
 }
 
-/* Efek Kilatan Cahaya saat Disentuh/Diklik */
 .btn-open::before {
     content: '';
     position: absolute;
@@ -446,39 +433,36 @@ body {
     left: -100%;
     width: 60%;
     height: 100%;
-    background: linear-gradient(
-        90deg, 
-        transparent, 
-        rgba(255, 255, 255, 0.7), 
-        transparent
-    );
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
     transform: skewX(-25deg);
     transition: none;
 }
 
-/* --- ANIMASI KHUSUS DI HP (SAAT DISENTUH / DIKLIK) --- */
 .btn-open:active {
-    transform: scale(0.92) translateY(2px); /* Tombol membal masuk ke dalam */
-    background-color: #ffe0aa;              /* Warna menjadi sedikit terang */
+    transform: scale(0.92) translateY(2px);
+    background-color: #ffe0aa;
     box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
 }
 
 .btn-open:active::before {
     left: 150%;
-    transition: left 0.4s ease-in-out; /* Kilatan cahaya cepat saat diklik */
+    transition: left 0.4s ease-in-out;
 }
 
-/* --- ANIMASI UNTUK LAPTOP/DESKTOP (KHUSUS PERANGKAT DENGAN MOUSE) --- */
 @media (hover: hover) {
     .btn-open:hover {
         transform: scale(1.05) translateY(-2px);
         box-shadow: 0 8px 20px rgba(255, 210, 133, 0.45);
     }
-    
     .btn-open:hover::before {
         left: 150%;
         transition: left 0.6s ease-in-out;
     }
+}
+
+.btn-open svg {
+    width: calc(14 * var(--u));
+    height: auto;
 }
 
 /* ============ MAIN CONTENT ============ */
@@ -574,7 +558,6 @@ body {
     text-align-last: center;
 }
 
-/* Profile Cards */
 .profile-card {
     padding: var(--space-48) var(--margin-x);
     text-align: center;
@@ -588,7 +571,6 @@ body {
     margin: 0 auto calc(24 * var(--u));
 }
 
-/* Rose decorations on frames */
 .rose-frame-tl {
     top: calc(-70 * var(--u));
     left: calc(-70 * var(--u));
@@ -604,7 +586,6 @@ body {
     z-index: 10;
 }
 
-/* Frame construction - three layers */
 .frame-wrapper {
     position: relative;
     width: 100%;
@@ -662,7 +643,6 @@ body {
     font-size: calc(15 * var(--u));
     font-weight: 700;
     color: #ffe0aa;
-    letter-spacing: 0.0em;
     margin-bottom: calc(3 * var(--u));
 }
 
@@ -673,6 +653,7 @@ body {
     opacity: 0.9;
 }
 
+/* Tombol Instagram */
 .btn-instagram {
     display: inline-flex;
     align-items: center;
@@ -689,8 +670,6 @@ body {
     font-weight: 500;
     text-decoration: none;
     justify-content: center;
-    
-    /* Transisi halus untuk semua perubahan */
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
 }
@@ -701,21 +680,19 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* --- EFEK SAAT HOVER (MOUSE DI ATAS TOMBOL) --- */
 .btn-instagram:hover {
     background-color: var(--color-gold);
     color: var(--color-maroon);
-    transform: translateY(-2px); /* Tombol sedikit terangkat */
+    transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
 }
 
 .btn-instagram:hover svg {
-    transform: scale(1.1) rotate(5deg); /* Ikon IG sedikit membesar & miring */
+    transform: scale(1.1) rotate(5deg);
 }
 
-/* --- EFEK SAAT DIKLIK / DISENTUH (ACTIVE STATE) --- */
 .btn-instagram:active {
-    transform: scale(0.92) translateY(0); /* Tombol membal masuk ke dalam */
+    transform: scale(0.92) translateY(0);
     background-color: var(--color-gold);
     color: var(--color-maroon);
     box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
@@ -762,7 +739,6 @@ body {
     margin-bottom: calc(24 * var(--u));
 }
 
-/* Countdown Timer */
 .countdown {
     display: grid;
     grid-template-columns: repeat(4, calc(78 * var(--u)));
@@ -823,7 +799,6 @@ body {
     margin: 0 auto;
 }
 
-/* Rose decorations on events - alternating sides */
 .rose-event-left {
     left: calc(215 * var(--u));
     top: calc(210 * var(--u));
@@ -872,7 +847,7 @@ body {
     font-size: calc(45 * var(--u));
     font-weight: 400;
     color: var(--color-maroon);
-    margin-top:  calc(-10 * var(--u));
+    margin-top: calc(-10 * var(--u));
     margin-bottom: calc(0 * var(--u));
     transform: translateX(-5px);
 }
@@ -927,6 +902,7 @@ body {
     opacity: 0.85;
 }
 
+/* Tombol Map */
 .btn-map {
     display: inline-flex;
     align-items: center;
@@ -942,8 +918,6 @@ body {
     font-size: calc(12 * var(--u));
     font-weight: 600;
     text-decoration: none;
-    
-    /* Transisi halus & menghilangkan efek tap bawaan HP */
     transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
 }
@@ -954,7 +928,6 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* --- EFEK SAAT HOVER (MOUSE DI ATAS TOMBOL) --- */
 .btn-map:hover {
     background-color: var(--color-gold);
     color: var(--color-maroon);
@@ -966,13 +939,13 @@ body {
     transform: scale(1.15);
 }
 
-/* --- EFEK SAAT DIKLIK / DISENTUH (ACTIVE STATE) --- */
 .btn-map:active {
-    transform: scale(0.94) translateY(0); /* Tombol membal masuk ke dalam */
+    transform: scale(0.94) translateY(0);
     background-color: var(--color-gold);
     color: var(--color-maroon);
     box-shadow: 0 2px 6px rgba(212, 175, 55, 0.4);
 }
+
 /* ============ GIFT SECTION ============ */
 .gift-section {
     text-align: center;
@@ -1011,9 +984,8 @@ body {
     margin: 0 auto calc(48 * var(--u));
 }
 
-/* --- STYLING LOGO BANK / E-WALLET --- */
 .gift-logo-link {
-    display: flex; /* <--- UBAH DARI inline-flex MENJADI flex AGAR CENTER PRESISI */
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 56px;
@@ -1052,24 +1024,6 @@ body {
     flex-direction: column;
     align-items: center;
     gap: calc(8 * var(--u));
-}
-
-.gift-icon {
-    width: calc(45 * var(--u));
-    height: calc(45 * var(--u));
-    background-color: var(--color-gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: calc(4 * var(--u));
-}
-
-.gift-icon svg {
-    width: calc(24 * var(--u));
-    height: calc(24 * var(--u));
-    stroke: var(--color-maroon);
-    fill: none;
 }
 
 .gift-method {
@@ -1231,7 +1185,6 @@ body {
     padding: calc(12 * var(--u));
 }
 
-/* Jumlah Tamu field with stepper */
 .jumlah-tamu-wrapper {
     display: flex;
     align-items: center;
@@ -1329,7 +1282,6 @@ body {
     color: #c41e3a;
 }
 
-/* Wishes List */
 .wishes-list {
     max-width: calc(342 * var(--u));
     margin: 0 auto;
@@ -1469,11 +1421,16 @@ body {
 }
 
 .rose-closing {
-    position:absolute
-    width: calc(100 * var(--u));
-    margin: 0 auto calc(32 * var(--u));
+    position: relative;          /* Mengubah dari absolute agar mengikuti alur dokumen */
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    transform: none;             /* Menghapus rotasi/pergeseran posisi jika ada */
+    width: calc(200 * var(--u)); /* Ukuran gambar mawar */
+    margin: 0 auto calc(30 * var(--u)); /* margin auto horizontal membuat gambar berada tepat di tengah */
     display: block;
-}
+} 
 
 /* Order Now */
 .order-now {
@@ -1538,7 +1495,6 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Desktop: position inside column */
 @media (min-width: 900px) {
     .music-toggle {
         right: calc(16 * var(--u));
@@ -1595,84 +1551,23 @@ body {
     pointer-events: auto;
 }
 
-/* ============ SMOOTH CINEMATIC STAGGERED REVEAL ============ */
-.reveal {
-    opacity: 0;
-    transform: translateY(50px);
+/* ============ CINEMATIC SCROLL REVEAL (REPEATING) ============ */
+.reveal,
+[data-aos] {
+    opacity: 0 !important;
+    transform: translateY(40px) !important;
     transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     will-change: opacity, transform;
 }
 
-.reveal.is-visible {
-    opacity: 1;
-    transform: none;
-}
-
-/* ============ STAGGERED REVEAL PROFIL ============ */
-/* ============ PURE CSS REVEAL (ANTI GHOIB) ============ */
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Begitu body tidak no-scroll lagi (cover terbuka), kelas is-visible langsung aktif otomatis */
-body:not(.no-scroll) .reveal,
-.reveal.is-visible {
-    opacity: 1;
-    transform: none;
-}
-
-/* Jeda waktu berurutan (staggered) yang rapi dan aman */
-.profiles-section .profile-card:nth-of-type(1) .profile-frame { transition-delay: 0.1s; }
-.profiles-section .profile-card:nth-of-type(1) .profile-script { transition-delay: 0.2s; }
-.profiles-section .profile-card:nth-of-type(1) .profile-name { transition-delay: 0.3s; }
-.profiles-section .profile-card:nth-of-type(1) .profile-parents { transition-delay: 0.4s; }
-.profiles-section .profile-card:nth-of-type(1) .btn-instagram { transition-delay: 0.5s; }
-
-.heart-divider { transition-delay: 0.6s; }
-
-.profiles-section .profile-card:nth-of-type(2) .profile-frame { transition-delay: 0.7s; }
-.profiles-section .profile-card:nth-of-type(2) .profile-script { transition-delay: 0.8s; }
-.profiles-section .profile-card:nth-of-type(2) .profile-name { transition-delay: 0.9s; }
-.profiles-section .profile-card:nth-of-type(2) .profile-parents { transition-delay: 1.0s; }
-.profiles-section .profile-card:nth-of-type(2) .btn-instagram { transition-delay: 1.1s; }
-
-
-/* ============ COVER SLIDE-UP ANIMATION ============ */
-.cover {
-    transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
-}
-
-.cover.hero-out,
-.cover.slide-up {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-}
-
-/* ============ SCROLL REVEAL ANIMATIONS ============ */
-
-/* Elements start hidden with smooth cinematic transition */
-.reveal,
-[data-aos] {
-    opacity: 0;
-    transform: translateY(45px);
-    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* When element becomes visible */
 .reveal.is-visible,
 [data-aos].aos-animate,
 [data-aos].is-visible {
-    opacity: 1;
-    transform: none;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
 
-/* Fade down variant */
 .reveal.fade-down,
 [data-aos="fade-down"] {
     transform: translateY(-45px);
@@ -1684,41 +1579,6 @@ body:not(.no-scroll) .reveal,
     transform: none;
 }
 
-/* Fade left variant */
-.reveal.fade-left,
-[data-aos="fade-left"] {
-    transform: translateX(45px);
-}
-
-.reveal.fade-left.is-visible,
-[data-aos="fade-left"].aos-animate,
-[data-aos="fade-left"].is-visible {
-    transform: none;
-}
-
-/* Fade right variant */
-.reveal.fade-right,
-[data-aos="fade-right"] {
-    transform: translateX(-45px);
-}
-
-.reveal.fade-right.is-visible,
-[data-aos="fade-right"].aos-animate,
-[data-aos="fade-right"].is-visible {
-    transform: none;
-}
-
-/* Fade up variant (default) */
-[data-aos="fade-up"] {
-    transform: translateY(45px);
-}
-
-[data-aos="fade-up"].aos-animate,
-[data-aos="fade-up"].is-visible {
-    transform: none;
-}
-
-/* Zoom in variant */
 .reveal.zoom-in,
 [data-aos="zoom-in"] {
     transform: scale(0.9);
@@ -1730,40 +1590,17 @@ body:not(.no-scroll) .reveal,
     transform: scale(1);
 }
 
-/* Mobile: smaller transform distances */
 @media screen and (max-width: 768px) {
     .reveal,
     [data-aos] {
         transform: translateY(30px);
     }
-    
-    .reveal.fade-down,
-    [data-aos="fade-down"] {
-        transform: translateY(-30px);
-    }
-    
-    .reveal.fade-left,
-    [data-aos="fade-left"] {
-        transform: translateX(30px);
-    }
-    
-    .reveal.fade-right,
-    [data-aos="fade-right"] {
-        transform: translateX(-30px);
-    }
-    
-    [data-aos="fade-up"] {
-        transform: translateY(30px);
-    }
 }
 
-/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
     .reveal,
     [data-aos] {
         transition-duration: 0.01ms !important;
         transition-delay: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        animation-delay: 0.01ms !important;
     }
 }
